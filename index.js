@@ -125,6 +125,8 @@ function hideBoxes(amountOfBoxesToHide) {
 
 function addBoxSelectionAndValidation() {
 
+    let mistakesCounter = 0;
+
     boxList.forEach(box => {
         box.addEventListener('click', () => {
             boxList.forEach(box => {
@@ -143,6 +145,8 @@ function addBoxSelectionAndValidation() {
                     box.textContent = event.key;
                     if (!box.classList.contains(event.key)) {
                         box.style.color = 'red';
+                        mistakesCounter++;
+                        loseCondition(mistakesCounter);
                     } else {
                         box.style.color = 'black';
                         box.classList.remove('hidden');
@@ -174,14 +178,67 @@ function highlightSelectedNumbers(selectedNumber) {
 
 function winCondition() {
     const hiddenBoxes = document.querySelectorAll('.hidden');
-    
+
     if (hiddenBoxes.length === 0) {
-        console.log('win');
+        createPopUpWindow(true);
     }
 }
 
-createGrid();
-const boxList = document.querySelectorAll('.box');
-fillGridWithNumbers();
-hideBoxes(5);
-addBoxSelectionAndValidation();
+function loseCondition(mistakesCounter) {
+    const hiddenBoxes = document.querySelectorAll('.hidden');
+    if (mistakesCounter === 3) {
+        hiddenBoxes.forEach(box => {
+            box.classList.remove('hidden');
+        })
+        createPopUpWindow(false);
+    }
+}
+
+function createPopUpWindow(winOrLose) {
+    const gridContainer = document.querySelector('.grid-container');
+    setTimeout(() => {
+        const popUpWindow = document.createElement('div');
+        popUpWindow.className = 'win-pop-up';
+        gridContainer.appendChild(popUpWindow);
+        if (winOrLose) {
+            const congratzText = document.createElement('h1');
+            congratzText.textContent = 'Wygrana! Gratulacje.'
+            popUpWindow.appendChild(congratzText);
+        } else {
+            const congratzText = document.createElement('h1');
+            congratzText.textContent = 'Przegrana, spróbuj ponownie.'
+            popUpWindow.appendChild(congratzText);
+        }
+        const playAgain = document.createElement('button');
+        playAgain.textContent = 'Zagraj Ponownie';
+        playAgain.setAttribute('id', 'play-again-button');
+        playAgain.setAttribute('type', 'button');
+        popUpWindow.appendChild(playAgain);
+        document.querySelector('#play-again-button').addEventListener('click', () => {
+            setTimeout(() => {
+                const body = document.querySelector('body');
+                body.innerHTML = '';
+                playTheGame();
+            }, 500);
+        })
+    }, 500);
+    
+}
+
+function playTheGame() {
+    createGrid();
+    boxList = document.querySelectorAll('.box');
+    fillGridWithNumbers();
+    hideBoxes(40);
+    addBoxSelectionAndValidation();
+}
+
+// createGrid();
+// const boxList = document.querySelectorAll('.box');
+// fillGridWithNumbers();
+// hideBoxes(10);
+// addBoxSelectionAndValidation();
+
+let boxList;
+
+playTheGame();
