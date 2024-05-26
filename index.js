@@ -160,11 +160,11 @@ function addBoxSelectionAndValidation() {
     });
 }
 
-function highlightSelectedNumbers(box) {
+function highlightSelectedNumbers(selectedNumber) {
     const visibleBoxes = document.querySelectorAll('.box:not(.hidden)');
 
     visibleBoxes.forEach((b) => {
-        if(box.textContent == b.textContent) {
+        if(selectedNumber.textContent == b.textContent) {
             b.classList.add('selected');
         }
     })
