@@ -62,6 +62,7 @@ function oneIndexToTheRight(array) {
 }
 
 function fillGridWithNumbers() {
+    //Wzór zapewniający brak powtórzeń liczb w każdym rzędzie, kolumnie i bloku 3x3
     // Wiersz 1: 1 2 3 4 5 6 7 8 9 (bez przesunięcia)
     // Wiersz 2: Przesuń liczby z wiersza 1 o 3 miejsca w prawo
     // Wiersz 3: Przesuń liczby z wiersza 1 o 6 miejsc w prawo
@@ -146,6 +147,7 @@ function addBoxSelectionAndValidation() {
                         box.style.color = 'black';
                         box.classList.remove('hidden');
                         highlightSelectedNumbers(box);
+                        winCondition();
                     }
                 }
     
@@ -170,8 +172,16 @@ function highlightSelectedNumbers(selectedNumber) {
     })
 }
 
+function winCondition() {
+    const hiddenBoxes = document.querySelectorAll('.hidden');
+    
+    if (hiddenBoxes.length === 0) {
+        console.log('win');
+    }
+}
+
 createGrid();
 const boxList = document.querySelectorAll('.box');
 fillGridWithNumbers();
-hideBoxes(40);
+hideBoxes(5);
 addBoxSelectionAndValidation();
