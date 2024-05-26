@@ -1,16 +1,6 @@
 function createGrid() {
     const mainContainer = document.createElement('div');
     mainContainer.className = 'container';
-    //test
-    const decorativeContainer = document.createElement('div');
-    decorativeContainer.className = 'decorative-container';
-    mainContainer.appendChild(decorativeContainer);
-    for (let i = 0; i < 9; i++) {
-        const decorativeLesser = document.createElement('div');
-        decorativeLesser.className = 'decorative-container-lesser';
-        decorativeContainer.appendChild(decorativeLesser);
-    } 
-    //test
     document.querySelector('body').appendChild(mainContainer);
     const gridContainer = document.createElement('div');
     gridContainer.className = 'grid-container';
@@ -18,6 +8,15 @@ function createGrid() {
     for (let i = 0; i < 81; i++) {
         const div = document.createElement('div');
         div.className = 'box';
+        if ((i + 1) % 3 === 0 && (i + 1) % 9 !== 0) {
+            div.style.borderRight = '4px solid black';
+        }
+        if (i >= 18 && i <= 26) {
+            div.style.borderBottom = '4px solid black';
+        }
+        if (i >= 45 && i <= 53) {
+            div.style.borderBottom = '4px solid black';
+        }
         gridContainer.appendChild(div);
     }  
 }
@@ -123,19 +122,56 @@ function hideBoxes(amountOfBoxesToHide) {
     });
 }
 
+function addBoxSelectionAndValidation() {
+
+    boxList.forEach(box => {
+        box.addEventListener('click', () => {
+            boxList.forEach(box => {
+                box.classList.remove('selected');
+            });
+
+            box.classList.add('selected');
+            box.focus();
+
+            highlightSelectedNumbers(box);
+        });
+
+        box.addEventListener('keydown', event => {
+            if (box.classList.contains('hidden')) {
+                if (event.key >= '1' && event.key <= '9') {
+                    box.textContent = event.key;
+                    if (!box.classList.contains(event.key)) {
+                        box.style.color = 'red';
+                    } else {
+                        box.style.color = 'black';
+                        box.classList.remove('hidden');
+                        highlightSelectedNumbers(box);
+                    }
+                }
+    
+                if (event.key === 'Backspace' || event.key === 'Delete') {
+                    box.textContent = '';
+                    box.style.color = 'black';
+                }
+            }
+        });
+
+        box.setAttribute('tabindex', '0');
+    });
+}
+
+function highlightSelectedNumbers(box) {
+    const visibleBoxes = document.querySelectorAll('.box:not(.hidden)');
+
+    visibleBoxes.forEach((b) => {
+        if(box.textContent == b.textContent) {
+            b.classList.add('selected');
+        }
+    })
+}
+
 createGrid();
 const boxList = document.querySelectorAll('.box');
 fillGridWithNumbers();
 hideBoxes(40);
-
-const hiddenBoxesList = document.querySelectorAll('.hidden');
-
-hiddenBoxesList.forEach(box => {
-    box.addEventListener('click', () => {
-        hiddenBoxesList.forEach(box => {
-            box.classList.remove('selected');
-        });
-
-        box.classList.add('selected');
-    });
-});
+addBoxSelectionAndValidation();
