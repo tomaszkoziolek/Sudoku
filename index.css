@@ -7,7 +7,7 @@ body {
     width: fit-content;
     height: fit-content;
     margin: auto;
-    margin-top: 50px;
+    margin-top: 70px;
 }
 
 .grid-container {
@@ -19,7 +19,7 @@ body {
     grid-template-rows: repeat(9, 1fr);
 }
 
-.win-pop-up {
+.win-pop-up, .rules-container, .difficulty-container {
     position: absolute;
     width: 400px;
     height: 400px;
@@ -35,6 +35,11 @@ body {
     align-items: center;
     flex-direction: column;
     border-radius: 10px;
+    color: white;
+}
+
+.rules-container {
+    z-index: 1111;
 }
 
 .box {
@@ -51,7 +56,7 @@ body {
     background-color: rgb(197, 197, 197);
 }
 
-button {
+#play-again-button {
     width: 200px;
     height: 70px;
     border-radius: 40px;
@@ -60,4 +65,81 @@ button {
 h1 {
     color: white;
     text-align: center;
+}
+
+p {
+    font-size: 21px;
+    text-align: center;
+}
+
+#rules-button {
+
+}
+
+#new-game-button {
+
+}
+
+.options {
+    flex: 1;
+    font-size: 17px;
+}
+
+.buttons-container {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translate(-50%);
+    width: 540px;
+    height: 50px;
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.difficulty {
+    flex: 1;
+    width: 400px;
+    gap: 20px;
+    border-radius: 10px;
+    font-size: 30px;
+}
+
+#easy-button {
+    background-color: rgb(255, 255, 255);
+}
+
+#medium-button {
+    background-color: rgb(190, 190, 190);
+}
+
+#hard-button {
+    background-color: rgb(135, 135, 135);
+}
+
+.digits-container {
+    position: absolute;
+    top: 630px;
+    left: 50%;
+    transform: translate(-50%);
+    width: 550px;
+    height: 80px;
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    align-items: center;
+}
+
+.digit-checker {
+    flex: 1;
+    background-color: white;
+    height: 50px;
+    border-radius: 25px;
+    color: black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 40px;
+    border: 3px solid black;
+    background-color: #f3f3f3;
 }

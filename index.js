@@ -1,7 +1,8 @@
 function createGrid() {
+    const body = document.querySelector('body');
     const mainContainer = document.createElement('div');
     mainContainer.className = 'container';
-    document.querySelector('body').appendChild(mainContainer);
+    body.appendChild(mainContainer);
     const gridContainer = document.createElement('div');
     gridContainer.className = 'grid-container';
     mainContainer.appendChild(gridContainer);
@@ -18,7 +19,188 @@ function createGrid() {
             div.style.borderBottom = '4px solid black';
         }
         gridContainer.appendChild(div);
-    }  
+    }
+
+    const buttonsContainer = document.createElement('div');
+    buttonsContainer.className = 'buttons-container';
+    body.appendChild(buttonsContainer);
+
+    generateRulesWindow(document.querySelector('.grid-container'));
+    createRulesButton(buttonsContainer);
+    createNewGameButton(buttonsContainer);
+    createHintButton(buttonsContainer);
+    createNumbersVisualizationContainer(body);
+}
+
+function countDigitRepetitions() {
+    const visibleBoxes = document.querySelectorAll('.box:not(.hidden)');
+    // console.log(visibleBoxes);
+    visibleBoxes.forEach(box => {
+        const boxClassList = box.classList;
+        let numericValue;
+        for (let i = 0; i < boxClassList.length; i++) {
+            if (isNumericClass(boxClassList[i])) {
+                numericValue = boxClassList[i];
+                break;
+            }
+        }
+        counter[numericValue]++;
+        if (counter[numericValue] >= 9) {
+            document.querySelector(`#id-${numericValue}`).style.visibility = 'hidden';
+        }
+    })
+    resetCounter();
+}
+
+function resetCounter() {
+    for (let number in counter) {
+        counter[number] = 0;
+    }
+}
+
+function createNumbersVisualizationContainer(parent) {
+    const digitsContainer = document.createElement('div');
+    digitsContainer.className = 'digits-container';
+    parent.appendChild(digitsContainer);
+    for (let i = 1; i <= 9; i++) {
+        const digitBox = document.createElement('div');
+        digitBox.id = `id-${i}`;
+        digitBox.className = 'digit-checker';
+        digitBox.textContent = `${i}`;
+        digitsContainer.appendChild(digitBox);
+    }
+}
+
+function useHint() {
+    const boxesToReveal = document.querySelectorAll('.hidden');
+    let boxIndex = Math.floor(Math.random() * boxesToReveal.length);
+    const chosenBox = boxesToReveal[boxIndex];
+    const chosenBoxClassList = chosenBox.classList;
+    let digit;
+    for (let i = 0; i < chosenBoxClassList.length; i++) {
+        if (isNumericClass(chosenBoxClassList[i])) {
+            digit = chosenBoxClassList[i];
+            break;
+        }
+    }
+    chosenBox.textContent = digit;
+    chosenBox.classList.remove('hidden');
+}
+
+function isNumericClass(className) {
+    return !isNaN(className) && !isNaN(parseFloat(className));
+}
+
+function createHintButton(parent) {
+    const hintButton = document.createElement('button');
+    hintButton.textContent = `Podpowiedź (${hintsAmount})`;
+    hintButton.setAttribute('id', 'hint-button');
+    hintButton.className = 'options';
+    hintButton.setAttribute('type', 'button');
+    parent.appendChild(hintButton);
+
+    hintButton.addEventListener('click', () => {
+        useHint();
+        hintsAmount--;
+        if (hintsAmount === 0) {
+            hintButton.disabled = true;
+        }
+        document.querySelector('#hint-button').textContent = `Podpowiedź (${hintsAmount})`;
+    })
+}
+
+function generateRulesWindow(parent) {
+    const rules = document.createElement('div');
+    rules.className = 'rules-container';
+    parent.appendChild(rules);
+    rules.style.visibility = 'hidden';
+    const rulesParagraph = document.createElement('p');
+    rules.appendChild(rulesParagraph);
+    rulesParagraph.textContent = `Diagram Sudoku składa się z 9x9 pól.
+    Możesz użyć tylko liczb od 1 do 9.
+    Każdy blok 3x3 może zawierać tylko liczby od 1 do 9.
+    Każda pionowa kolumna może zawierać tylko liczby od 1 do 9.
+    Każdy poziomy wiersz może zawierać tylko liczby od 1 do 9.
+    Każda liczba w bloku 3x3, pionowej kolumnie lub poziomym wierszu może być użyta tylko raz.
+    Gra kończy się, gdy cały diagram Sudoku jest poprawnie wypełniony liczbami.`;
+}
+
+function createRulesButton(parent) {
+    const rulesButton = document.createElement('button');
+    rulesButton.textContent = 'Zasady';
+    rulesButton.setAttribute('id', 'rules-button');
+    rulesButton.className = 'options';
+    rulesButton.setAttribute('type', 'button');
+    parent.appendChild(rulesButton);
+
+    rulesButton.addEventListener('click', () => {
+        const elementToToggle = document.querySelector('.rules-container');
+        if (elementToToggle.style.visibility === "hidden") {
+            elementToToggle.style.visibility = "visible";
+        } else {
+            elementToToggle.style.visibility = "hidden";
+        }
+    })
+} 
+
+function createNewGameButton(parent) {
+    const newGameButton = document.createElement('button');
+    newGameButton.textContent = 'Nowa Gra';
+    newGameButton.className = 'options';
+    newGameButton.setAttribute('id', 'new-game-button');
+    newGameButton.setAttribute('type', 'button');
+    parent.appendChild(newGameButton);
+
+    newGameButton.addEventListener('click', () => {
+        newGameButton.disabled = true;
+        document.querySelector('#hint-button').disabled = true;
+        createDifficultyContainerAndButtons();
+    })
+}
+
+function createDifficultyContainerAndButtons() {
+    const difficultyContainer = document.createElement('div');
+    difficultyContainer.className = 'difficulty-container';
+    document.querySelector('.grid-container').appendChild(difficultyContainer);
+
+    const easyButton = document.createElement('button');
+    easyButton.textContent = 'Łatwy';
+    easyButton.setAttribute('id', 'easy-button');
+    easyButton.className = 'difficulty';
+    easyButton.setAttribute('type', 'button');
+    difficultyContainer.appendChild(easyButton);
+
+    easyButton.addEventListener('click', () => {
+        playTheGame(easyDifficulty);
+        hintsAmount = 1;
+        document.querySelector('#hint-button').textContent = `Podpowiedź (${hintsAmount})`;
+    })
+
+    const mediumButton = document.createElement('button');
+    mediumButton.textContent = 'Średni';
+    mediumButton.setAttribute('id', 'medium-button');
+    mediumButton.className = 'difficulty';
+    mediumButton.setAttribute('type', 'button');
+    difficultyContainer.appendChild(mediumButton);
+
+    mediumButton.addEventListener('click', () => {
+        playTheGame(mediumDifficulty);
+        hintsAmount = 2;
+        document.querySelector('#hint-button').textContent = `Podpowiedź (${hintsAmount})`;
+    })
+
+    const hardButton = document.createElement('button');
+    hardButton.textContent = 'Trudny';
+    hardButton.setAttribute('id', 'hard-button');
+    hardButton.className = 'difficulty';
+    hardButton.setAttribute('type', 'button');
+    difficultyContainer.appendChild(hardButton);
+
+    hardButton.addEventListener('click', () => {
+        playTheGame(hardDifficulty);
+        hintsAmount = 3;
+        document.querySelector('#hint-button').textContent = `Podpowiedź (${hintsAmount})`;
+    })
 }
 
 function generateFirstRowNumbers() {
@@ -153,11 +335,13 @@ function addBoxSelectionAndValidation() {
                         highlightSelectedNumbers(box);
                         winCondition();
                     }
+                    countDigitRepetitions();
                 }
     
                 if (event.key === 'Backspace' || event.key === 'Delete') {
                     box.textContent = '';
                     box.style.color = 'black';
+                    countDigitRepetitions();
                 }
             }
         });
@@ -215,30 +399,41 @@ function createPopUpWindow(winOrLose) {
         playAgain.setAttribute('type', 'button');
         popUpWindow.appendChild(playAgain);
         document.querySelector('#play-again-button').addEventListener('click', () => {
-            setTimeout(() => {
-                const body = document.querySelector('body');
-                body.innerHTML = '';
-                playTheGame();
-            }, 500);
+            document.querySelector('#new-game-button').disabled = true;
+            document.querySelector('#hint-button').disabled = true;
+            createDifficultyContainerAndButtons();
         })
     }, 500);
     
 }
 
-function playTheGame() {
+function playTheGame(difficulty) {
+    resetCounter();
+    const body = document.querySelector('body');
+    body.innerHTML = '';
     createGrid();
     boxList = document.querySelectorAll('.box');
     fillGridWithNumbers();
-    hideBoxes(40);
+    hideBoxes(difficulty);
     addBoxSelectionAndValidation();
 }
 
-// createGrid();
-// const boxList = document.querySelectorAll('.box');
-// fillGridWithNumbers();
-// hideBoxes(10);
-// addBoxSelectionAndValidation();
-
 let boxList;
+const easyDifficulty = 40; //boxes to hide
+const mediumDifficulty = 45; //boxes to hide
+const hardDifficulty = 50; //boxes to hide
+let hintsAmount = 1;
 
-playTheGame();
+const counter = {
+    1: 0,
+    2: 0,
+    3: 0,
+    4: 0,
+    5: 0,
+    6: 0,
+    7: 0,
+    8: 0,
+    9: 0
+};
+
+playTheGame(easyDifficulty);
