@@ -30,6 +30,15 @@ function createGrid() {
     createNewGameButton(buttonsContainer);
     createHintButton(buttonsContainer);
     createNumbersVisualizationContainer(body);
+    createMistakesCounter(buttonsContainer);
+}
+
+function createMistakesCounter(parent) {
+    const mistakesCounter = document.createElement('div');
+    mistakesCounter.className = 'mistakes-counter';
+    mistakesCounter.classList.add('options');
+    mistakesCounter.textContent = 'Błędy: 0/3';
+    parent.appendChild(mistakesCounter);
 }
 
 function countDigitRepetitions() {
@@ -137,8 +146,10 @@ function createRulesButton(parent) {
         const elementToToggle = document.querySelector('.rules-container');
         if (elementToToggle.style.visibility === "hidden") {
             elementToToggle.style.visibility = "visible";
+            rulesButton.classList.add('highlight-button');
         } else {
             elementToToggle.style.visibility = "hidden";
+            rulesButton.classList.remove('highlight-button');
         }
     })
 } 
@@ -328,9 +339,10 @@ function addBoxSelectionAndValidation() {
                     if (!box.classList.contains(event.key)) {
                         box.style.color = 'red';
                         mistakesCounter++;
+                        document.querySelector('.mistakes-counter').textContent = `Błędy: ${mistakesCounter}/3`;
                         loseCondition(mistakesCounter);
                     } else {
-                        box.style.color = 'black';
+                        box.style.color = 'blue';
                         box.classList.remove('hidden');
                         highlightSelectedNumbers(box);
                         winCondition();
@@ -365,6 +377,7 @@ function winCondition() {
 
     if (hiddenBoxes.length === 0) {
         createPopUpWindow(true);
+        document.querySelector('#hint-button').disabled = true;
     }
 }
 
@@ -375,6 +388,7 @@ function loseCondition(mistakesCounter) {
             box.classList.remove('hidden');
         })
         createPopUpWindow(false);
+        document.querySelector('#hint-button').disabled = true;
     }
 }
 
@@ -393,17 +407,16 @@ function createPopUpWindow(winOrLose) {
             congratzText.textContent = 'Przegrana, spróbuj ponownie.'
             popUpWindow.appendChild(congratzText);
         }
+        document.querySelector('#new-game-button').disabled = true;
         const playAgain = document.createElement('button');
         playAgain.textContent = 'Zagraj Ponownie';
         playAgain.setAttribute('id', 'play-again-button');
         playAgain.setAttribute('type', 'button');
         popUpWindow.appendChild(playAgain);
         document.querySelector('#play-again-button').addEventListener('click', () => {
-            document.querySelector('#new-game-button').disabled = true;
-            document.querySelector('#hint-button').disabled = true;
             createDifficultyContainerAndButtons();
         })
-    }, 500);
+    }, 200);
     
 }
 
