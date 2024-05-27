@@ -9,6 +9,10 @@ function createGrid() {
     for (let i = 0; i < 81; i++) {
         const div = document.createElement('div');
         div.className = 'box';
+        const row = Math.floor(i / 9) + 1;
+        const column = (i % 9) + 1;
+        div.classList.add(`row-${row}`);
+        div.classList.add(`column-${column}`);
         if ((i + 1) % 3 === 0 && (i + 1) % 9 !== 0) {
             div.style.borderRight = '4px solid black';
         }
@@ -115,6 +119,8 @@ function useHint() {
     chosenBox.classList.remove('smaller-font');
     chosenBox.textContent = digit;
     chosenBox.classList.remove('hidden');
+    countDigitRepetitions();
+    removeNotes(chosenBox, digit);
 }
 
 function isNumericClass(className) {
@@ -369,6 +375,7 @@ function addBoxSelectionAndValidation() {
                             box.style.color = 'blue';
                             box.classList.remove('hidden');
                             highlightSelectedNumbers(box);
+                            removeNotes(box, event.key);
                             winCondition();
                         }
                         countDigitRepetitions();
@@ -405,6 +412,32 @@ function addBoxSelectionAndValidation() {
 
         box.setAttribute('tabindex', '0');
     });
+}
+
+function removeNotes(box, eventKey) {
+    const row = [...box.classList].find(cls => cls.startsWith('row-'));
+    const column = [...box.classList].find(cls => cls.startsWith('column-'));
+    const hiddenRowBoxes = document.querySelectorAll(`.${row}.hidden`);
+    const hiddenColumnBoxes = document.querySelectorAll(`.${column}.hidden`);
+    const combinedList = [
+        ...hiddenRowBoxes,
+        ...hiddenColumnBoxes
+    ];
+    combinedList.forEach(box => {
+        if (box.textContent.includes(eventKey)) {
+            let original = box.textContent;
+            let toRemove = ` ${eventKey}`;
+            if (!box.textContent.includes(toRemove)) {
+                toRemove = eventKey;
+            }
+            box.textContent = original.replace(toRemove, "");
+        }
+    })
+    console.log(row)
+    console.log(column)
+    console.log(hiddenRowBoxes)
+    console.log(hiddenColumnBoxes)
+    console.log(combinedList)
 }
 
 function highlightSelectedNumbers(selectedNumber) {
