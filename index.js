@@ -71,6 +71,26 @@ function createNumbersVisualizationContainer(parent) {
     const digitsContainer = document.createElement('div');
     digitsContainer.className = 'digits-container';
     parent.appendChild(digitsContainer);
+    // const notes = document.createElement('div');
+    // notes.className = 'notes';
+    // notes.textContent = 'Notatki';
+    // digitsContainer.appendChild(notes);
+
+    const notesButton = document.createElement('button');
+    notesButton.textContent = 'Notatki';
+    notesButton.setAttribute('id', 'notes-button');
+    notesButton.className = 'notes';
+    notesButton.setAttribute('type', 'button');
+    digitsContainer.appendChild(notesButton);
+
+    notesButton.addEventListener('click', () => {
+        if (notesButton.classList.contains('highlight-notes-button')) {
+            notesButton.classList.remove('highlight-notes-button');
+        } else {
+            notesButton.classList.add('highlight-notes-button');
+        }
+    })
+
     for (let i = 1; i <= 9; i++) {
         const digitBox = document.createElement('div');
         digitBox.id = `id-${i}`;
@@ -92,6 +112,7 @@ function useHint() {
             break;
         }
     }
+    chosenBox.classList.remove('smaller-font');
     chosenBox.textContent = digit;
     chosenBox.classList.remove('hidden');
 }
@@ -333,27 +354,51 @@ function addBoxSelectionAndValidation() {
         });
 
         box.addEventListener('keydown', event => {
-            if (box.classList.contains('hidden')) {
-                if (event.key >= '1' && event.key <= '9') {
-                    box.textContent = event.key;
-                    if (!box.classList.contains(event.key)) {
-                        box.style.color = 'red';
-                        mistakesCounter++;
-                        document.querySelector('.mistakes-counter').textContent = `Błędy: ${mistakesCounter}/3`;
-                        loseCondition(mistakesCounter);
-                    } else {
-                        box.style.color = 'blue';
-                        box.classList.remove('hidden');
-                        highlightSelectedNumbers(box);
-                        winCondition();
+            const notesButton = document.querySelector('#notes-button');
+            if (!notesButton.classList.contains('highlight-notes-button')) {
+                box.classList.remove('smaller-font');
+                if (box.classList.contains('hidden')) {
+                    if (event.key >= '1' && event.key <= '9') {
+                        box.textContent = event.key;
+                        if (!box.classList.contains(event.key)) {
+                            box.style.color = 'red';
+                            mistakesCounter++;
+                            document.querySelector('.mistakes-counter').textContent = `Błędy: ${mistakesCounter}/3`;
+                            loseCondition(mistakesCounter);
+                        } else {
+                            box.style.color = 'blue';
+                            box.classList.remove('hidden');
+                            highlightSelectedNumbers(box);
+                            winCondition();
+                        }
+                        countDigitRepetitions();
                     }
-                    countDigitRepetitions();
+        
+                    if (event.key === 'Backspace' || event.key === 'Delete') {
+                        box.textContent = '';
+                        box.style.color = 'black';
+                        countDigitRepetitions();
+                    }
                 }
-    
-                if (event.key === 'Backspace' || event.key === 'Delete') {
-                    box.textContent = '';
+            } else {
+                if (box.classList.contains('hidden')) {
+                    box.classList.add('smaller-font');
                     box.style.color = 'black';
-                    countDigitRepetitions();
+                    if (event.key >= '1' && event.key <= '9') {
+                        if (box.textContent.includes(event.key)) {
+                            let original = box.textContent;
+                            let toRemove = ` ${event.key}`;
+                            if (!box.textContent.includes(toRemove)) {
+                                toRemove = event.key;
+                            }
+                            box.textContent = original.replace(toRemove, "");
+                        } else {
+                            box.textContent += ` ${event.key}`;
+                        }
+                    }
+                    if (event.key === 'Backspace' || event.key === 'Delete') {
+                        box.textContent = '';
+                    }
                 }
             }
         });
@@ -432,9 +477,9 @@ function playTheGame(difficulty) {
 }
 
 let boxList;
-const easyDifficulty = 40; //boxes to hide
-const mediumDifficulty = 45; //boxes to hide
-const hardDifficulty = 50; //boxes to hide
+const easyDifficulty = 35; //boxes to hide
+const mediumDifficulty = 40; //boxes to hide
+const hardDifficulty = 45; //boxes to hide
 let hintsAmount = 1;
 
 const counter = {
