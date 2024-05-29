@@ -19,7 +19,7 @@ body {
     grid-template-rows: repeat(9, 1fr);
 }
 
-.win-pop-up, .rules-container, .difficulty-container {
+.win-pop-up, .rules-container, .difficulty-container, .question-popup {
     position: absolute;
     width: 400px;
     height: 400px;
@@ -192,4 +192,20 @@ p {
 .highlight-notes-button {
     background-color: #000000;
     color: rgb(232, 232, 232);
+}
+
+.question-box {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    border: 3px solid black;
+    border-radius: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 40px;
+    font-weight: bold;
+    width: 60px;
+    height: 60px;
+    background-color: rgb(165, 165, 165);
 }

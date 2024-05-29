@@ -35,6 +35,32 @@ function createGrid(difficulty) {
     createHintButton(buttonsContainer);
     createNumbersVisualizationContainer(body);
     createMistakesCounter(buttonsContainer, difficulty);
+    createQuestionsButton();
+}
+
+function createQuestionsButton() {
+    const question = document.createElement('div');
+    question.className = 'question-box';
+    document.body.appendChild(question);
+    question.textContent = '?';
+    const quest = document.createElement('div');
+    quest.className = 'question-popup';
+    document.querySelector('.grid-container').appendChild(quest);
+    quest.style.visibility = 'hidden';
+    const questParagraph = document.createElement('p');
+    quest.appendChild(questParagraph);
+    questParagraph.textContent = `Prawy przycisk myszy włącza/wyłącza tryb wstawiania notatek - 
+    można też po prostu klikać przycisk 'Notatki'.`;
+
+     question.addEventListener('click', () => {
+        const isHidden = quest.style.visibility === 'hidden';
+
+        if (isHidden) {
+            quest.style.visibility = 'visible';
+        } else {
+            quest.style.visibility = 'hidden';
+        }
+     })
 }
 
 function createMistakesCounter(parent, difficulty) {
@@ -690,3 +716,24 @@ const counter = {
 };
 
 playTheGame(easyDifficulty, 'Łatwy');
+
+document.querySelector('.grid-container').addEventListener('contextmenu', event => {
+    const box = event.target;
+    event.preventDefault();
+    const notesButton = document.querySelector('#notes-button');
+    if (notesButton.classList.contains('highlight-notes-button')) {
+        notesButton.classList.remove('highlight-notes-button');
+    } else {
+        notesButton.classList.add('highlight-notes-button');
+    }
+
+    boxList.forEach(box => {
+        box.classList.remove('selected');
+    });
+
+    box.classList.add('selected');
+    box.focus();
+
+    previouslyFocusedBox = box;
+    highlightSelectedNumbers(box);
+})
