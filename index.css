@@ -94,9 +94,23 @@ p {
 .mistakes-counter {
     background-color: rgb(175, 175, 175);
     display: flex;
+    justify-content: space-between;
+    border: 1px solid black;
+    flex-direction: column;
+}
+
+.level {
+    flex: 1;
+    display: flex;
     justify-content: center;
     align-items: center;
-    border: 1px solid black;
+}
+
+.mistake {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    /* align-items: center; */
 }
 
 .buttons-container {

@@ -1,4 +1,4 @@
-function createGrid() {
+function createGrid(difficulty) {
     const body = document.querySelector('body');
     const mainContainer = document.createElement('div');
     mainContainer.className = 'container';
@@ -34,14 +34,24 @@ function createGrid() {
     createNewGameButton(buttonsContainer);
     createHintButton(buttonsContainer);
     createNumbersVisualizationContainer(body);
-    createMistakesCounter(buttonsContainer);
+    createMistakesCounter(buttonsContainer, difficulty);
 }
 
-function createMistakesCounter(parent) {
+function createMistakesCounter(parent, difficulty) {
     const mistakesCounter = document.createElement('div');
     mistakesCounter.className = 'mistakes-counter';
     mistakesCounter.classList.add('options');
-    mistakesCounter.textContent = 'Błędy: 0/3';
+
+    const level = document.createElement('div');
+    level.className = 'level';
+    mistakesCounter.appendChild(level);
+    level.textContent = `Poziom ${difficulty}`;
+
+    const mistake = document.createElement('div');
+    mistake.className = 'mistake';
+    mistakesCounter.appendChild(mistake);
+
+    mistake.textContent = 'Błędy: 0/3';
     parent.appendChild(mistakesCounter);
 }
 
@@ -57,6 +67,8 @@ function countDigitRepetitions() {
                 break;
             }
         }
+        // console.log(numericValue);
+        // console.log(counter[numericValue]);
         counter[numericValue]++;
         if (counter[numericValue] >= 9) {
             document.querySelector(`#id-${numericValue}`).style.visibility = 'hidden';
@@ -90,8 +102,10 @@ function createNumbersVisualizationContainer(parent) {
     notesButton.addEventListener('click', () => {
         if (notesButton.classList.contains('highlight-notes-button')) {
             notesButton.classList.remove('highlight-notes-button');
+            previouslyFocusedBox.focus();
         } else {
             notesButton.classList.add('highlight-notes-button');
+            previouslyFocusedBox.focus();
         }
     })
 
@@ -209,7 +223,7 @@ function createDifficultyContainerAndButtons() {
     difficultyContainer.appendChild(easyButton);
 
     easyButton.addEventListener('click', () => {
-        playTheGame(easyDifficulty);
+        playTheGame(easyDifficulty, 'Łatwy');
         hintsAmount = 1;
         document.querySelector('#hint-button').textContent = `Podpowiedź (${hintsAmount})`;
     })
@@ -222,7 +236,7 @@ function createDifficultyContainerAndButtons() {
     difficultyContainer.appendChild(mediumButton);
 
     mediumButton.addEventListener('click', () => {
-        playTheGame(mediumDifficulty);
+        playTheGame(mediumDifficulty, 'Średni');
         hintsAmount = 2;
         document.querySelector('#hint-button').textContent = `Podpowiedź (${hintsAmount})`;
     })
@@ -235,7 +249,7 @@ function createDifficultyContainerAndButtons() {
     difficultyContainer.appendChild(hardButton);
 
     hardButton.addEventListener('click', () => {
-        playTheGame(hardDifficulty);
+        playTheGame(hardDifficulty, 'Trudny');
         hintsAmount = 3;
         document.querySelector('#hint-button').textContent = `Podpowiedź (${hintsAmount})`;
     })
@@ -281,7 +295,7 @@ function oneIndexToTheRight(array) {
     return newArray;
 }
 
-function fillGridWithNumbers() {
+function generateMatrix() {
     //Wzór zapewniający brak powtórzeń liczb w każdym rzędzie, kolumnie i bloku 3x3
     // Wiersz 1: 1 2 3 4 5 6 7 8 9 (bez przesunięcia)
     // Wiersz 2: Przesuń liczby z wiersza 1 o 3 miejsca w prawo
@@ -302,46 +316,193 @@ function fillGridWithNumbers() {
     const eighthRow = threeIndexesToTheRight(seventhRow);
     const ninethRow = threeIndexesToTheRight(eighthRow);
 
-    const combinedArrayOfNumbers = [
-        ...firstRowRandomNumbers,
-        ...secondRow,
-        ...thirdRow,
-        ...fourthRow,
-        ...fifthRow,
-        ...sixthRow,
-        ...seventhRow,
-        ...eighthRow,
-        ...ninethRow,
+    const sudokuMatrix = [
+        firstRowRandomNumbers,
+        secondRow,
+        thirdRow,
+        fourthRow,
+        fifthRow,
+        sixthRow,
+        seventhRow,
+        eighthRow,
+        ninethRow
     ];
 
-    boxList.forEach((box, index) => {
-        box.textContent = combinedArrayOfNumbers[index];
-        box.classList.add(`${combinedArrayOfNumbers[index]}`);
-    });
+    //dodatkowe przetasowanie aby uniknac powtarzalnych schematow
+    shuffleRows(sudokuMatrix);
+    shuffleColumns(sudokuMatrix);
+
+    return sudokuMatrix;
+
+    // boxList.forEach((box, index) => {
+    //     box.textContent = combinedArrayOfNumbers[index];
+    //     box.classList.add(`${combinedArrayOfNumbers[index]}`);
+    // });
+
+    // hideBoxes(easyDifficulty);
 }
 
-function hideBoxes(amountOfBoxesToHide) {
-    const boxesToHide= [];
+function fillGrid(difficulty) {
+    let grid = generateMatrix(); // Generowanie pełnej tablicy
+    let copiedGrid = deepCopyMatrix(grid);
+    let gridWithHiddenBoxes = hideRandomFieldsWithUniqueSolution(copiedGrid, difficulty);
+    const gridToArray = matrixToArray(grid);
+    const gridWithHiddenBoxesToArray = matrixToArray(gridWithHiddenBoxes);
 
-    for (let i = 0; i < amountOfBoxesToHide; i++) {
-        while (true) {
-            const number = Math.floor(Math.random() * 81);
-            if (!boxesToHide.includes(number)) {
-                boxesToHide.push(number);
-                break;
+    const boxList = document.querySelectorAll('.box');
+    gridWithHiddenBoxesToArray.forEach((number, index) => {
+        if (number !== 0) {
+            boxList[index].textContent = number;
+            boxList[index].classList.add(`${number}`);
+        } else {
+            boxList[index].classList.add(`${gridToArray[index]}`);
+            boxList[index].classList.add('hidden');
+        }
+    })
+}
+
+function hideRandomFieldsWithUniqueSolution(grid, numToHide) {
+    let hiddenCount = 0;
+
+    while (hiddenCount < numToHide) {
+        let row = Math.floor(Math.random() * 9);
+        let col = Math.floor(Math.random() * 9);
+        if (grid[row][col] !== 0) {
+            let temp = grid[row][col];
+            grid[row][col] = 0; // Ukrywanie pola
+
+            if (isUniqueSolution(grid)) {
+                hiddenCount++;
+            } else {
+                grid[row][col] = temp; // Cofanie ukrywania, jeśli rozwiązanie nie jest unikalne
             }
         }
     }
 
-    // console.log(boxesToHide.length)
+    return grid;
+}
 
-    boxesToHide.forEach((boxIndex) => {
-        if (boxList[boxIndex]) {
-            boxList[boxIndex].textContent = '';
-            boxList[boxIndex].classList.add('hidden');
+function isUniqueSolution(grid) {
+    let solutionCount = 0;
+
+    function solve(board) {
+        for (let row = 0; row < 9; row++) {
+            for (let col = 0; col < 9; col++) {
+                if (board[row][col] === 0) {
+                    for (let num = 1; num <= 9; num++) {
+                        if (isValidMove(board, row, col, num)) {
+                            board[row][col] = num;
+                            solve(board);
+                            board[row][col] = 0;
+                        }
+                    }
+                    return;
+                }
+            }
         }
+        solutionCount++;
+    }
+
+    const boardCopy = deepCopyMatrix(grid); // Skopiowanie macierzy przed rozpoczęciem rozwiązania
+    solve(boardCopy);
+
+    return solutionCount === 1;
+}
+
+function deepCopyMatrix(matrix) {
+    return matrix.map(row => [...row]);
+}
+
+function isValidMove(board, row, col, num) {
+    for (let x = 0; x < 9; x++) {
+        if (board[row][x] === num || board[x][col] === num) {
+            return false;
+        }
+    }
+
+    const startRow = Math.floor(row / 3) * 3;
+    const startCol = Math.floor(col / 3) * 3;
+    for (let i = 0; i < 3; i++) {
+        for (let j = 0; j < 3; j++) {
+            if (board[startRow + i][startCol + j] === num) {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+function matrixToArray(matrix) {
+    let array = [];
+    for (let i = 0; i < 9; i++) {
+        array = array.concat(matrix[i]);
+    }
+    return array;
+}
+
+function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
+function shuffleRows(matrix) {
+    const blocks = [[0, 1, 2], [3, 4, 5], [6, 7, 8]];
+    blocks.forEach(block => {
+        const shuffledBlock = shuffle([...block]);
+        shuffledBlock.forEach((rowIndex, i) => {
+            const temp = matrix[block[i]];
+            matrix[block[i]] = matrix[rowIndex];
+            matrix[rowIndex] = temp;
+        });
     });
 }
+
+function shuffleColumns(matrix) {
+    const blocks = [[0, 1, 2], [3, 4, 5], [6, 7, 8]];
+    blocks.forEach(block => {
+        const shuffledBlock = shuffle([...block]);
+        matrix.forEach(row => {
+            const temp = row[block[0]];
+            row[block[0]] = row[shuffledBlock[0]];
+            row[shuffledBlock[0]] = temp;
+
+            const temp2 = row[block[1]];
+            row[block[1]] = row[shuffledBlock[1]];
+            row[shuffledBlock[1]] = temp2;
+
+            const temp3 = row[block[2]];
+            row[block[2]] = row[shuffledBlock[2]];
+            row[shuffledBlock[2]] = temp3;
+        });
+    });
+}
+
+// function hideBoxes(amountOfBoxesToHide) {
+//     const boxesToHide= [];
+
+//     for (let i = 0; i < amountOfBoxesToHide; i++) {
+//         while (true) {
+//             const number = Math.floor(Math.random() * 81);
+//             if (!boxesToHide.includes(number)) {
+//                 boxesToHide.push(number);
+//                 break;
+//             }
+//         }
+//     }
+
+//     // console.log(boxesToHide.length)
+
+//     boxesToHide.forEach((boxIndex) => {
+//         if (boxList[boxIndex]) {
+//             boxList[boxIndex].textContent = '';
+//             boxList[boxIndex].classList.add('hidden');
+//         }
+//     });
+// }
 
 function addBoxSelectionAndValidation() {
 
@@ -356,6 +517,7 @@ function addBoxSelectionAndValidation() {
             box.classList.add('selected');
             box.focus();
 
+            previouslyFocusedBox = box;
             highlightSelectedNumbers(box);
         });
 
@@ -369,7 +531,7 @@ function addBoxSelectionAndValidation() {
                         if (!box.classList.contains(event.key)) {
                             box.style.color = 'red';
                             mistakesCounter++;
-                            document.querySelector('.mistakes-counter').textContent = `Błędy: ${mistakesCounter}/3`;
+                            document.querySelector('.mistake').textContent = `Błędy: ${mistakesCounter}/3`;
                             loseCondition(mistakesCounter);
                         } else {
                             box.style.color = 'blue';
@@ -433,11 +595,11 @@ function removeNotes(box, eventKey) {
             box.textContent = original.replace(toRemove, "");
         }
     })
-    console.log(row)
-    console.log(column)
-    console.log(hiddenRowBoxes)
-    console.log(hiddenColumnBoxes)
-    console.log(combinedList)
+    // console.log(row)
+    // console.log(column)
+    // console.log(hiddenRowBoxes)
+    // console.log(hiddenColumnBoxes)
+    // console.log(combinedList)
 }
 
 function highlightSelectedNumbers(selectedNumber) {
@@ -498,22 +660,22 @@ function createPopUpWindow(winOrLose) {
     
 }
 
-function playTheGame(difficulty) {
+function playTheGame(difficulty, level) {
     resetCounter();
     const body = document.querySelector('body');
     body.innerHTML = '';
-    createGrid();
+    createGrid(level);
     boxList = document.querySelectorAll('.box');
-    fillGridWithNumbers();
-    hideBoxes(difficulty);
+    fillGrid(difficulty);
     addBoxSelectionAndValidation();
 }
 
 let boxList;
 const easyDifficulty = 35; //boxes to hide
-const mediumDifficulty = 40; //boxes to hide
-const hardDifficulty = 45; //boxes to hide
+const mediumDifficulty = 45; //boxes to hide
+const hardDifficulty = 55; //boxes to hide
 let hintsAmount = 1;
+let previouslyFocusedBox = null;
 
 const counter = {
     1: 0,
@@ -527,4 +689,4 @@ const counter = {
     9: 0
 };
 
-playTheGame(easyDifficulty);
+playTheGame(easyDifficulty, 'Łatwy');
