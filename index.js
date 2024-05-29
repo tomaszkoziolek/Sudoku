@@ -686,6 +686,29 @@ function createPopUpWindow(winOrLose) {
     
 }
 
+function addNotesToggleOnPpm() {
+    document.querySelector('.grid-container').addEventListener('contextmenu', event => {
+        const box = event.target;
+        event.preventDefault();
+        const notesButton = document.querySelector('#notes-button');
+        if (notesButton.classList.contains('highlight-notes-button')) {
+            notesButton.classList.remove('highlight-notes-button');
+        } else {
+            notesButton.classList.add('highlight-notes-button');
+        }
+    
+        boxList.forEach(box => {
+            box.classList.remove('selected');
+        });
+    
+        box.classList.add('selected');
+        box.focus();
+    
+        previouslyFocusedBox = box;
+        highlightSelectedNumbers(box);
+    })
+}
+
 function playTheGame(difficulty, level) {
     resetCounter();
     const body = document.querySelector('body');
@@ -694,6 +717,7 @@ function playTheGame(difficulty, level) {
     boxList = document.querySelectorAll('.box');
     fillGrid(difficulty);
     addBoxSelectionAndValidation();
+    addNotesToggleOnPpm();
 }
 
 let boxList;
@@ -716,24 +740,3 @@ const counter = {
 };
 
 playTheGame(easyDifficulty, 'Łatwy');
-
-document.querySelector('.grid-container').addEventListener('contextmenu', event => {
-    const box = event.target;
-    event.preventDefault();
-    const notesButton = document.querySelector('#notes-button');
-    if (notesButton.classList.contains('highlight-notes-button')) {
-        notesButton.classList.remove('highlight-notes-button');
-    } else {
-        notesButton.classList.add('highlight-notes-button');
-    }
-
-    boxList.forEach(box => {
-        box.classList.remove('selected');
-    });
-
-    box.classList.add('selected');
-    box.focus();
-
-    previouslyFocusedBox = box;
-    highlightSelectedNumbers(box);
-})
