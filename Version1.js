@@ -151,9 +151,11 @@ function createNumbersVisualizationContainer(parent) {
     notesAndEreaseContainer.appendChild(ereaseButton);
 
     ereaseButton.addEventListener('click', () => {
-        if (previouslyFocusedBox.classList.contains('hidden')) {
-            previouslyFocusedBox.textContent = '';
-            previouslyFocusedBox.focus();
+        if (previouslyFocusedBox !== null) {
+            if (previouslyFocusedBox.classList.contains('hidden')) {
+                previouslyFocusedBox.textContent = '';
+                previouslyFocusedBox.focus();
+            }
         }
     })
 
@@ -167,10 +169,14 @@ function createNumbersVisualizationContainer(parent) {
     notesButton.addEventListener('click', () => {
         if (notesButton.classList.contains('highlight-notes-button')) {
             notesButton.classList.remove('highlight-notes-button');
-            previouslyFocusedBox.focus();
+            if (previouslyFocusedBox !== null) {
+                previouslyFocusedBox.focus();
+            }
         } else {
             notesButton.classList.add('highlight-notes-button');
-            previouslyFocusedBox.focus();
+            if (previouslyFocusedBox !== null) {
+                previouslyFocusedBox.focus();
+            }
         }
     })
 
