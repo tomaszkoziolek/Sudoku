@@ -139,12 +139,30 @@ function createNumbersVisualizationContainer(parent) {
     // notes.textContent = 'Notatki';
     // digitsContainer.appendChild(notes);
 
+    const notesAndEreaseContainer = document.createElement('div');
+    notesAndEreaseContainer.className = 'notesAndErease-container';
+    document.body.appendChild(notesAndEreaseContainer);
+
+    const ereaseButton = document.createElement('button');
+    ereaseButton.textContent = 'Wymaż';
+    ereaseButton.setAttribute('id', 'erease-button');
+    ereaseButton.className = 'erease-button';
+    ereaseButton.setAttribute('type', 'button');
+    notesAndEreaseContainer.appendChild(ereaseButton);
+
+    ereaseButton.addEventListener('click', () => {
+        if (previouslyFocusedBox.classList.contains('hidden')) {
+            previouslyFocusedBox.textContent = '';
+            previouslyFocusedBox.focus();
+        }
+    })
+
     const notesButton = document.createElement('button');
     notesButton.textContent = 'Notatki';
     notesButton.setAttribute('id', 'notes-button');
     notesButton.className = 'notes';
     notesButton.setAttribute('type', 'button');
-    digitsContainer.appendChild(notesButton);
+    notesAndEreaseContainer.appendChild(notesButton);
 
     notesButton.addEventListener('click', () => {
         if (notesButton.classList.contains('highlight-notes-button')) {
