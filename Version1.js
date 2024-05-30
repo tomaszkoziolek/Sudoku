@@ -740,6 +740,7 @@ function playTheGame(difficulty, level) {
     createGrid(level);
     boxList = document.querySelectorAll('.box');
     fillGrid(difficulty);
+    countDigitRepetitions();
     addBoxSelectionAndValidation();
     addNotesToggleOnPpm();
 }
