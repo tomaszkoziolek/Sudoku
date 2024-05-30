@@ -13,6 +13,27 @@ function createGrid(difficulty) {
         const column = (i % 9) + 1;
         div.classList.add(`row-${row}`);
         div.classList.add(`column-${column}`);
+
+        if (row <= 3 && column <= 3) {
+            div.classList.add('box-1')
+        } else if (row <= 3 && column <= 6) {
+            div.classList.add('box-2')
+        } else if (row <= 3 && column <= 9) {
+            div.classList.add('box-3')
+        } else if (row <= 6 && column <= 3) {
+            div.classList.add('box-4')
+        } else if (row <= 6 && column <= 6) {
+            div.classList.add('box-5')
+        } else if (row <= 6 && column <= 9) {
+            div.classList.add('box-6')
+        } else if (row <= 9 && column <= 3) {
+            div.classList.add('box-7')
+        } else if (row <= 9 && column <= 6) {
+            div.classList.add('box-8')
+        } else if (row <= 9 && column <= 9) {
+            div.classList.add('box-9')
+        }
+
         if ((i + 1) % 3 === 0 && (i + 1) % 9 !== 0) {
             div.style.borderRight = '4px solid black';
         }
@@ -605,11 +626,14 @@ function addBoxSelectionAndValidation() {
 function removeNotes(box, eventKey) {
     const row = [...box.classList].find(cls => cls.startsWith('row-'));
     const column = [...box.classList].find(cls => cls.startsWith('column-'));
+    const boxNumber = [...box.classList].find(cls => cls.startsWith('box-'));
+    const boxNumberListHidden = document.querySelectorAll(`.${boxNumber}.hidden`);
     const hiddenRowBoxes = document.querySelectorAll(`.${row}.hidden`);
     const hiddenColumnBoxes = document.querySelectorAll(`.${column}.hidden`);
     const combinedList = [
         ...hiddenRowBoxes,
-        ...hiddenColumnBoxes
+        ...hiddenColumnBoxes,
+        ...boxNumberListHidden
     ];
     combinedList.forEach(box => {
         if (box.textContent.includes(eventKey)) {
