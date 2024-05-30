@@ -162,6 +162,44 @@ function createNumbersVisualizationContainer(parent) {
         digitBox.className = 'digit-checker';
         digitBox.textContent = `${i}`;
         digitsContainer.appendChild(digitBox);
+
+        digitBox.addEventListener('click', () => {
+            const notesButton = document.querySelector('#notes-button');
+            if (!notesButton.classList.contains('highlight-notes-button')) {
+                previouslyFocusedBox.classList.remove('smaller-font');
+                if (previouslyFocusedBox.classList.contains('hidden')) {
+                    previouslyFocusedBox.textContent = digitBox.textContent;
+                        if (!previouslyFocusedBox.classList.contains(digitBox.textContent)) {
+                            previouslyFocusedBox.style.color = 'red';
+                            mistakesCounter++;
+                            document.querySelector('.mistake').textContent = `Błędy: ${mistakesCounter}/3`;
+                            loseCondition(mistakesCounter);
+                        } else {
+                            previouslyFocusedBox.style.color = 'blue';
+                            previouslyFocusedBox.classList.remove('hidden');
+                            highlightSelectedNumbers(previouslyFocusedBox);
+                            removeNotes(previouslyFocusedBox, digitBox.textContent);
+                            winCondition();
+                        }
+                        countDigitRepetitions();
+                    }
+                } else {
+                if (previouslyFocusedBox.classList.contains('hidden')) {
+                    previouslyFocusedBox.classList.add('smaller-font');
+                    previouslyFocusedBox.style.color = 'black';
+                        if (previouslyFocusedBox.textContent.includes(digitBox.textContent)) {
+                            let original = previouslyFocusedBox.textContent;
+                            let toRemove = ` ${digitBox.textContent}`;
+                            if (!previouslyFocusedBox.textContent.includes(toRemove)) {
+                                toRemove = digitBox.textContent;
+                            }
+                            previouslyFocusedBox.textContent = original.replace(toRemove, "");
+                        } else {
+                            previouslyFocusedBox.textContent += ` ${digitBox.textContent}`;
+                        }
+                }
+            }
+        })
     }
 }
 
@@ -553,8 +591,6 @@ function shuffleColumns(matrix) {
 
 function addBoxSelectionAndValidation() {
 
-    let mistakesCounter = 0;
-
     boxList.forEach(box => {
         box.addEventListener('click', () => {
             boxList.forEach(box => {
@@ -743,6 +779,7 @@ function playTheGame(difficulty, level) {
     countDigitRepetitions();
     addBoxSelectionAndValidation();
     addNotesToggleOnPpm();
+    mistakesCounter = 0;
 }
 
 let boxList;
@@ -751,6 +788,7 @@ const mediumDifficulty = 45; //boxes to hide
 const hardDifficulty = 55; //boxes to hide
 let hintsAmount = 1;
 let previouslyFocusedBox = null;
+let mistakesCounter = 0;
 
 const counter = {
     1: 0,
