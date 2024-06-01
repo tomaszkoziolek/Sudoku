@@ -98,6 +98,7 @@ p {
     justify-content: space-between;
     border: 1px solid black;
     flex-direction: column;
+    flex: 1.2;
 }
 
 .level {
@@ -173,7 +174,7 @@ p {
     background-color: #f3f3f3;
 }
 
-.notes, .erease-button {
+.notes, .erease-button, .hint-button {
     /* flex: 2.5; */
     background-color: #f3f3f3;
     /* height: 36px; */
@@ -219,6 +220,23 @@ p {
     justify-content: space-between;
     align-items: center;
     justify-content: center;
+}
+
+.solve-existing {
+    position: absolute;
+    background-color: #f3f3f3;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid black;
+}
+
+.timer-box {
+    flex: 0.7;
+    background-color: rgb(240, 240, 240);
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 @media (max-width: 767px) {
@@ -288,7 +306,7 @@ p {
         font-size: 15px;
     }
 
-    .notes, .erease-button {
+    .notes, .erease-button, .hint-button {
         height: 25px;
         font-size: 10px;
         border-radius: 25px;
@@ -379,10 +397,11 @@ p {
         font-size: 30px;
     }
 
-    .notes, .erease-button {
+    .notes, .erease-button, .hint-button {
         height: 36px;
-        font-size: 20px;
+        font-size: 18px;
         border-radius: 25px;
+        width: 170px;
     }
 
     .question-box {
@@ -399,5 +418,14 @@ p {
         width: 550px;
         height: 50px;
         gap: 10px;
+    }
+
+    .solve-existing {
+        top: 630px;
+        left: 50%;
+        transform: translate(-50%);
+        width: 500px;
+        height: 70px;
+        font-size: 30px;
     }
   }

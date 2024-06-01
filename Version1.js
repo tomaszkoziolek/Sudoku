@@ -53,10 +53,39 @@ function createGrid(difficulty) {
     generateRulesWindow(document.querySelector('.grid-container'));
     createRulesButton(buttonsContainer);
     createNewGameButton(buttonsContainer);
-    createHintButton(buttonsContainer);
     createNumbersVisualizationContainer(body);
+    createSolveButton(buttonsContainer);
+    createTimer(buttonsContainer);
     createMistakesCounter(buttonsContainer, difficulty);
     createQuestionsButton();
+}
+
+function createTimer(parent) {
+    const timerBox = document.createElement('div');
+    timerBox.className = 'timer-box';
+    timerBox.classList.add('options');
+    parent.appendChild(timerBox);
+}
+
+function updateTimer() {
+    totalSeconds++;
+
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+
+    const formattedMinutes = String(minutes).padStart(2, '0');
+    const formattedSeconds = String(seconds).padStart(2, '0');
+
+    document.querySelector('.timer-box').textContent = `${formattedMinutes}:${formattedSeconds}`;
+}
+
+function createSolveButton(parent) {
+    const solveButton = document.createElement('button');
+    solveButton.textContent = 'Rozwiąż istniejące';
+    solveButton.setAttribute('id', 'solve-button');
+    solveButton.className = 'options';
+    solveButton.setAttribute('type', 'button');
+    parent.appendChild(solveButton);
 }
 
 function createQuestionsButton() {
@@ -225,6 +254,8 @@ function createNumbersVisualizationContainer(parent) {
             }
         })
     }
+
+    createHintButton(notesAndEreaseContainer);
 }
 
 function useHint() {
@@ -254,7 +285,7 @@ function createHintButton(parent) {
     const hintButton = document.createElement('button');
     hintButton.textContent = `Podpowiedź (${hintsAmount})`;
     hintButton.setAttribute('id', 'hint-button');
-    hintButton.className = 'options';
+    hintButton.className = 'hint-button';
     hintButton.setAttribute('type', 'button');
     parent.appendChild(hintButton);
 
@@ -716,7 +747,7 @@ function highlightSelectedNumbers(selectedNumber) {
     const visibleBoxes = document.querySelectorAll('.box:not(.hidden)');
 
     visibleBoxes.forEach((b) => {
-        if(selectedNumber.textContent == b.textContent) {
+        if(selectedNumber.textContent == b.textContent && !b.classList.contains('solve-mode')) {
             b.classList.add('selected');
         }
     })
@@ -727,6 +758,7 @@ function winCondition() {
 
     if (hiddenBoxes.length === 0) {
         createPopUpWindow(true);
+        clearInterval(intervalId);
         document.querySelector('#hint-button').disabled = true;
     }
 }
@@ -738,6 +770,7 @@ function loseCondition(mistakesCounter) {
             box.classList.remove('hidden');
         })
         createPopUpWindow(false);
+        clearInterval(intervalId);
         document.querySelector('#hint-button').disabled = true;
     }
 }
@@ -804,6 +837,11 @@ function playTheGame(difficulty, level) {
     addBoxSelectionAndValidation();
     addNotesToggleOnPpm();
     mistakesCounter = 0;
+    totalSeconds = 0;
+    clearInterval(intervalId);
+    updateTimer();
+    intervalId = setInterval(updateTimer, 1000);
+    addSolveFunctionality();
 }
 
 let boxList;
@@ -813,6 +851,8 @@ const hardDifficulty = 55; //boxes to hide
 let hintsAmount = 1;
 let previouslyFocusedBox = null;
 let mistakesCounter = 0;
+let totalSeconds = 0;
+let intervalId;
 
 const counter = {
     1: 0,
@@ -827,3 +867,28 @@ const counter = {
 };
 
 playTheGame(easyDifficulty, 'Łatwy');
+
+function addSolveFunctionality() {
+    document.querySelector('#solve-button').addEventListener('click', () => {
+        clearInterval(intervalId);
+        document.querySelector('.notesAndErease-container').style.display = 'none';
+        document.querySelector('.digits-container').style.display = 'none';
+
+        const boxList = document.querySelectorAll('.box');
+        console.log(boxList);
+
+        boxList.forEach(box => {
+            box.textContent = '';
+            box.className = 'box solve-mode';
+        })
+
+        if (!document.querySelector('.solve-existing')) {
+            const solveExistingButton = document.createElement('button');
+            solveExistingButton.textContent = 'Rozwiąż';
+            solveExistingButton.setAttribute('id', 'solve-existing-button');
+            solveExistingButton.className = 'solve-existing';
+            solveExistingButton.setAttribute('type', 'button');
+            document.body.appendChild(solveExistingButton);
+        }
+    })
+}
