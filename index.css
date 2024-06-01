@@ -20,7 +20,7 @@ body {
     grid-template-rows: repeat(9, 1fr);
 }
 
-.win-pop-up, .rules-container, .difficulty-container, .question-popup {
+.win-pop-up, .rules-container, .difficulty-container, .question-popup, .no-solution-popup, .wrong-data-popup {
     position: absolute;
     /* width: 400px;
     height: 400px; */
@@ -222,14 +222,14 @@ p {
     justify-content: center;
 }
 
-.solve-existing {
+/* .solve-existing {
     position: absolute;
     background-color: #f3f3f3;
     display: flex;
     justify-content: center;
     align-items: center;
     border: 2px solid black;
-}
+} */
 
 .timer-box {
     flex: 0.7;
@@ -250,7 +250,7 @@ p {
         height: 300px;
     }
 
-    .win-pop-up, .rules-container, .difficulty-container, .question-popup {
+    .win-pop-up, .rules-container, .difficulty-container, .question-popup, .no-solution-popup, .wrong-data-popup {
         width: 250px;
         height: 250px;
         padding: 10px;
@@ -341,7 +341,7 @@ p {
         height: 540px;
     }
 
-    .win-pop-up, .rules-container, .difficulty-container, .question-popup {
+    .win-pop-up, .rules-container, .difficulty-container, .question-popup, .no-solution-popup, .wrong-data-popup {
         width: 400px;
         height: 400px;
         padding: 20px;
@@ -420,12 +420,12 @@ p {
         gap: 10px;
     }
 
-    .solve-existing {
+    /* .solve-existing {
         top: 630px;
         left: 50%;
         transform: translate(-50%);
-        width: 500px;
-        height: 70px;
-        font-size: 30px;
-    }
+        width: 300px;
+        height: 40px;
+        font-size: 20px;
+    } */
   }

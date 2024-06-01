@@ -218,39 +218,43 @@ function createNumbersVisualizationContainer(parent) {
 
         digitBox.addEventListener('click', () => {
             const notesButton = document.querySelector('#notes-button');
-            if (!notesButton.classList.contains('highlight-notes-button')) {
-                previouslyFocusedBox.classList.remove('smaller-font');
-                if (previouslyFocusedBox.classList.contains('hidden')) {
-                    previouslyFocusedBox.textContent = digitBox.textContent;
-                        if (!previouslyFocusedBox.classList.contains(digitBox.textContent)) {
-                            previouslyFocusedBox.style.color = 'red';
-                            mistakesCounter++;
-                            document.querySelector('.mistake').textContent = `Błędy: ${mistakesCounter}/3`;
-                            loseCondition(mistakesCounter);
-                        } else {
-                            previouslyFocusedBox.style.color = 'blue';
-                            previouslyFocusedBox.classList.remove('hidden');
-                            highlightSelectedNumbers(previouslyFocusedBox);
-                            removeNotes(previouslyFocusedBox, digitBox.textContent);
-                            winCondition();
-                        }
-                        countDigitRepetitions();
-                    }
-                } else {
-                if (previouslyFocusedBox.classList.contains('hidden')) {
-                    previouslyFocusedBox.classList.add('smaller-font');
-                    previouslyFocusedBox.style.color = 'black';
-                        if (previouslyFocusedBox.textContent.includes(digitBox.textContent)) {
-                            let original = previouslyFocusedBox.textContent;
-                            let toRemove = ` ${digitBox.textContent}`;
-                            if (!previouslyFocusedBox.textContent.includes(toRemove)) {
-                                toRemove = digitBox.textContent;
+            if (!previouslyFocusedBox.classList.contains('solve-mode')) {
+                if (!notesButton.classList.contains('highlight-notes-button')) {
+                    previouslyFocusedBox.classList.remove('smaller-font');
+                    if (previouslyFocusedBox.classList.contains('hidden')) {
+                        previouslyFocusedBox.textContent = digitBox.textContent;
+                            if (!previouslyFocusedBox.classList.contains(digitBox.textContent)) {
+                                previouslyFocusedBox.style.color = 'red';
+                                mistakesCounter++;
+                                document.querySelector('.mistake').textContent = `Błędy: ${mistakesCounter}/3`;
+                                loseCondition(mistakesCounter);
+                            } else {
+                                previouslyFocusedBox.style.color = 'blue';
+                                previouslyFocusedBox.classList.remove('hidden');
+                                highlightSelectedNumbers(previouslyFocusedBox);
+                                removeNotes(previouslyFocusedBox, digitBox.textContent);
+                                winCondition();
                             }
-                            previouslyFocusedBox.textContent = original.replace(toRemove, "");
-                        } else {
-                            previouslyFocusedBox.textContent += ` ${digitBox.textContent}`;
+                            countDigitRepetitions();
                         }
+                    } else {
+                    if (previouslyFocusedBox.classList.contains('hidden')) {
+                        previouslyFocusedBox.classList.add('smaller-font');
+                        previouslyFocusedBox.style.color = 'black';
+                            if (previouslyFocusedBox.textContent.includes(digitBox.textContent)) {
+                                let original = previouslyFocusedBox.textContent;
+                                let toRemove = ` ${digitBox.textContent}`;
+                                if (!previouslyFocusedBox.textContent.includes(toRemove)) {
+                                    toRemove = digitBox.textContent;
+                                }
+                                previouslyFocusedBox.textContent = original.replace(toRemove, "");
+                            } else {
+                                previouslyFocusedBox.textContent += ` ${digitBox.textContent}`;
+                            }
+                    }
                 }
+            } else {
+                previouslyFocusedBox.textContent = digitBox.textContent;
             }
         })
     }
@@ -661,51 +665,61 @@ function addBoxSelectionAndValidation() {
 
         box.addEventListener('keydown', event => {
             const notesButton = document.querySelector('#notes-button');
-            if (!notesButton.classList.contains('highlight-notes-button')) {
-                box.classList.remove('smaller-font');
-                if (box.classList.contains('hidden')) {
-                    if (event.key >= '1' && event.key <= '9') {
-                        box.textContent = event.key;
-                        if (!box.classList.contains(event.key)) {
-                            box.style.color = 'red';
-                            mistakesCounter++;
-                            document.querySelector('.mistake').textContent = `Błędy: ${mistakesCounter}/3`;
-                            loseCondition(mistakesCounter);
-                        } else {
-                            box.style.color = 'blue';
-                            box.classList.remove('hidden');
-                            highlightSelectedNumbers(box);
-                            removeNotes(box, event.key);
-                            winCondition();
+            if (!box.classList.contains('solve-mode')) {
+                if (!notesButton.classList.contains('highlight-notes-button')) {
+                    box.classList.remove('smaller-font');
+                    if (box.classList.contains('hidden')) {
+                        if (event.key >= '1' && event.key <= '9') {
+                            box.textContent = event.key;
+                            if (!box.classList.contains(event.key)) {
+                                box.style.color = 'red';
+                                mistakesCounter++;
+                                document.querySelector('.mistake').textContent = `Błędy: ${mistakesCounter}/3`;
+                                loseCondition(mistakesCounter);
+                            } else {
+                                box.style.color = 'blue';
+                                box.classList.remove('hidden');
+                                highlightSelectedNumbers(box);
+                                removeNotes(box, event.key);
+                                winCondition();
+                            }
+                            countDigitRepetitions();
                         }
-                        countDigitRepetitions();
+            
+                        if (event.key === 'Backspace' || event.key === 'Delete') {
+                            box.textContent = '';
+                            box.style.color = 'black';
+                            countDigitRepetitions();
+                        }
                     }
-        
-                    if (event.key === 'Backspace' || event.key === 'Delete') {
-                        box.textContent = '';
+                } else {
+                    if (box.classList.contains('hidden')) {
+                        box.classList.add('smaller-font');
                         box.style.color = 'black';
-                        countDigitRepetitions();
+                        if (event.key >= '1' && event.key <= '9') {
+                            if (box.textContent.includes(event.key)) {
+                                let original = box.textContent;
+                                let toRemove = ` ${event.key}`;
+                                if (!box.textContent.includes(toRemove)) {
+                                    toRemove = event.key;
+                                }
+                                box.textContent = original.replace(toRemove, "");
+                            } else {
+                                box.textContent += ` ${event.key}`;
+                            }
+                        }
+                        if (event.key === 'Backspace' || event.key === 'Delete') {
+                            box.textContent = '';
+                        }
                     }
                 }
             } else {
-                if (box.classList.contains('hidden')) {
-                    box.classList.add('smaller-font');
-                    box.style.color = 'black';
-                    if (event.key >= '1' && event.key <= '9') {
-                        if (box.textContent.includes(event.key)) {
-                            let original = box.textContent;
-                            let toRemove = ` ${event.key}`;
-                            if (!box.textContent.includes(toRemove)) {
-                                toRemove = event.key;
-                            }
-                            box.textContent = original.replace(toRemove, "");
-                        } else {
-                            box.textContent += ` ${event.key}`;
-                        }
-                    }
-                    if (event.key === 'Backspace' || event.key === 'Delete') {
-                        box.textContent = '';
-                    }
+                if (event.key >= '1' && event.key <= '9') {
+                    box.textContent = event.key;
+                }
+
+                if (event.key === 'Backspace' || event.key === 'Delete') {
+                    box.textContent = '';
                 }
             }
         });
@@ -869,26 +883,216 @@ const counter = {
 playTheGame(easyDifficulty, 'Łatwy');
 
 function addSolveFunctionality() {
+
     document.querySelector('#solve-button').addEventListener('click', () => {
         clearInterval(intervalId);
-        document.querySelector('.notesAndErease-container').style.display = 'none';
-        document.querySelector('.digits-container').style.display = 'none';
+        document.querySelector('.timer-box').style.display = 'none';
+        document.querySelector('.mistakes-counter').style.display = 'none';
+
+        if (document.querySelector('.no-solution-popup')) {
+            document.querySelector('.no-solution-popup').remove();
+        }
+
+        if (document.querySelector('.wrong-data-popup')) {
+            document.querySelector('.wrong-data-popup').remove();
+        }
+
+        if (document.querySelector('#solve-existing-button')) {
+            document.querySelector('#solve-existing-button').disabled = false;
+        }
 
         const boxList = document.querySelectorAll('.box');
-        console.log(boxList);
+        // console.log(boxList);
 
         boxList.forEach(box => {
             box.textContent = '';
             box.className = 'box solve-mode';
+            box.style.color = 'black';
         })
 
-        if (!document.querySelector('.solve-existing')) {
+        document.querySelector('#solve-button').disabled = true;
+
+        if (!document.querySelector('#solve-existing-button')) {
             const solveExistingButton = document.createElement('button');
             solveExistingButton.textContent = 'Rozwiąż';
             solveExistingButton.setAttribute('id', 'solve-existing-button');
-            solveExistingButton.className = 'solve-existing';
+            solveExistingButton.className = 'options';
             solveExistingButton.setAttribute('type', 'button');
-            document.body.appendChild(solveExistingButton);
+            document.querySelector('.buttons-container').appendChild(solveExistingButton);
+
+            solveExistingButton.addEventListener('click', () => {
+                const solveMatrix = [];
+                // console.log(solveMatrix)
+                boxList.forEach(box => {
+                    if (box.textContent === '') {
+                        solveMatrix.push(0);
+                    } else {
+                        solveMatrix.push(parseBoxContent(box));
+                    }
+                })
+
+                const convertedMatrix = arrayToMatrix(solveMatrix);
+                // console.log(convertedMatrix);
+                if (isUniqueRowsColsBlocks(convertedMatrix)) {
+                    if (solveSudoku(convertedMatrix)) {
+                        const convertedSolvedMatrix = matrixToArray(convertedMatrix);
+                        // console.log(convertedSolvedMatrix);
+                        boxList.forEach((box, index) => {
+                            if (box.textContent === '') {
+                                box.textContent = convertedSolvedMatrix[index];
+                                box.style.color = 'blue';
+                            }
+                        })
+    
+                        document.querySelector('#solve-button').disabled = false;
+                        document.querySelector('#solve-existing-button').disabled = true;
+    
+                    } else {
+                        console.log('brak rozwiazania');
+                        const gridContainer = document.querySelector('.grid-container');
+                        const popUpWindow = document.createElement('div');
+                        popUpWindow.className = 'no-solution-popup';
+                        gridContainer.appendChild(popUpWindow);
+                        const paragraph = document.createElement('p');
+                        paragraph.textContent = `Brak rozwiązania. Powodem może być błąd przy wpisywaniu cyfr, lub 
+                        sudoku, które probujesz rozwiązać nie jest poprawnie skonstruowane 
+                        (każde Sudoku posiada dokładnie jedno unikalne rozwiązanie). Upewnij się, że dane, które 
+                        wprowadzasz są poprawne.`;
+                        popUpWindow.appendChild(paragraph);
+                        document.querySelector('#solve-button').disabled = false;
+                        document.querySelector('#solve-existing-button').disabled = true;
+                    }
+                } else {
+                    console.log('zle dane');
+                    const gridContainer = document.querySelector('.grid-container');
+                    const popUpWindow = document.createElement('div');
+                    popUpWindow.className = 'wrong-data-popup';
+                    gridContainer.appendChild(popUpWindow);
+                    const paragraph = document.createElement('p');
+                    paragraph.textContent = `Niepoprawne dane. Upewnij się, że cyfry które wprowadzasz 
+                    spełniają zasady sudoku: Każda cyfra może zostać użyta tylko raz w rzędzie, kolumnie i 
+                    bloku 3x3.`;
+                    popUpWindow.appendChild(paragraph);
+                    document.querySelector('#solve-button').disabled = false;
+                    document.querySelector('#solve-existing-button').disabled = true;
+                }
+            })
         }
     })
+}
+
+function isUniqueRow(row) {
+    let seen = new Set();
+    for (let cell of row) {
+        if (cell !== 0 && seen.has(cell)) {
+            return false;
+        }
+        seen.add(cell);
+    }
+    return true;
+}
+
+function isUniqueRowsColsBlocks(grid) {
+    // Sprawdzenie unikalności wierszy
+    for (let row of grid) {
+        if (!isUniqueRow(row)) {
+            return false;
+        }
+    }
+
+    // Sprawdzenie unikalności kolumn
+    for (let col = 0; col < 9; col++) {
+        let column = [];
+        for (let row = 0; row < 9; row++) {
+            column.push(grid[row][col]);
+        }
+        if (!isUniqueRow(column)) {
+            return false;
+        }
+    }
+
+    // Sprawdzenie unikalności bloków 3x3
+    for (let i = 0; i < 9; i += 3) {
+        for (let j = 0; j < 9; j += 3) {
+            let block = [];
+            for (let row = i; row < i + 3; row++) {
+                for (let col = j; col < j + 3; col++) {
+                    block.push(grid[row][col]);
+                }
+            }
+            if (!isUniqueRow(block)) {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+function isValid(grid, row, col, num) {
+    for (let x = 0; x < 9; x++) {
+        if (grid[row][x] === num || grid[x][col] === num) {
+            return false;
+        }
+
+        const startRow = Math.floor(row / 3) * 3;
+        const startCol = Math.floor(col / 3) * 3;
+        for (let i = 0; i < 3; i++) {
+            for (let j = 0; j < 3; j++) {
+                if (grid[startRow + i][startCol + j] === num) {
+                    return false;
+                }
+            }
+        }
+    }
+    return true;
+}
+
+function solveSudoku(grid) {
+    const emptyLocation = findEmptyLocation(grid);
+    if (!emptyLocation) {
+        return true; // Sudoku rozwiązane
+    }
+
+    const [row, col] = emptyLocation;
+
+    for (let num = 1; num <= 9; num++) {
+        if (isValid(grid, row, col, num)) {
+            grid[row][col] = num; // Tymczasowo przypisz num
+
+            if (solveSudoku(grid)) {
+                return true;
+            }
+
+            grid[row][col] = 0; // Cofnij przypisanie num
+        }
+    }
+
+    return false; // Trigger backtracking
+}
+
+function findEmptyLocation(grid) {
+    for (let row = 0; row < 9; row++) {
+        for (let col = 0; col < 9; col++) {
+            if (grid[row][col] === 0) {
+                return [row, col];
+            }
+        }
+    }
+    return null;
+}
+
+function arrayToMatrix(array) {
+    const matrix = [];
+    for (let i = 0; i < 9; i++) {
+        const row = array.slice(i * 9, i * 9 + 9);
+        matrix.push(row);
+    }
+    return matrix;
+}
+
+function parseBoxContent(box) {
+    const textContent = box.textContent.trim(); // Usunięcie białych znaków
+    const numericValue = Number(textContent); // Konwersja stringu na liczbę
+    return numericValue;
 }
