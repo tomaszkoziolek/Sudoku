@@ -181,7 +181,7 @@ function createNumbersVisualizationContainer(parent) {
 
     ereaseButton.addEventListener('click', () => {
         if (previouslyFocusedBox !== null) {
-            if (previouslyFocusedBox.classList.contains('hidden')) {
+            if (previouslyFocusedBox.classList.contains('hidden') || previouslyFocusedBox.classList.contains('solve-mode')) {
                 previouslyFocusedBox.textContent = '';
                 previouslyFocusedBox.focus();
             }
